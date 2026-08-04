@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Grievance Registry — Raise a Complaint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDEEF0;
+    --panel:#FFFFFF;
+    --ink:#1B2A4A;
+    --ink-soft:#4B5975;
+    --stamp:#9E3A3A;
+    --brass:#A9744F;
+    --ok:#3F7D58;
+    --line:#D2D6DE;
+    --display:'Zilla Slab', serif;
+    --sans:'Inter', sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.55;
+  }
+
+  /* LETTERHEAD */
+  .letterhead{
+    background:var(--ink);
+    color:#EDEEF0;
+    padding:22px 28px;
+  }
+  .letterhead-inner{
+    max-width:1120px;
+    margin:0 auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .lh-title{
+    font-family:var(--display);
+    font-size:20px;
+    font-weight:600;
+    letter-spacing:0.01em;
+  }
+  .lh-title span{ color:var(--brass); }
+  .lh-tag{
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:#B8C0D2;
+    letter-spacing:.05em;
+  }
+
+  main{
+    max-width:1120px;
+    margin:0 auto;
+    padding:44px 24px 90px;
+  }
+
+  .hero{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:24px;
+    flex-wrap:wrap;
+    margin-bottom:34px;
+  }
+  .hero h1{
+    font-family:var(--display);
+    font-size:clamp(28px,4vw,40px);
+    margin:0 0 8px;
+    font-weight:600;
+  }
+  .hero p{
+    color:var(--ink-soft);
+    max-width:520px;
+    margin:0;
+    font-size:15px;
+  }
+  .office-code{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--ink-soft);
+    border:1px solid var(--line);
+    background:var(--panel);
+    padding:8px 12px;
+    border-radius:4px;
+    white-space:nowrap;
+  }
+
+  /* LAYOUT: form + ticket */
+  .desk{
+    display:grid;
+    grid-template-columns:1.15fr 0.85fr;
+    gap:0;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:0 1px 3px rgba(27,42,74,0.06);
+  }
+  @media (max-width:860px){
+    .desk{ grid-template-columns:1fr; }
+  }
+
+  form{
+    padding:36px 40px;
+  }
+  fieldset{
+    border:none;
+    padding:0;
+    margin:0 0 26px;
+  }
+  legend{
+    font-family:var(--display);
+    font-size:14px;
+    font-weight:600;
+    color:var(--brass);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    padding:0 0 10px;
+    border-bottom:1px solid var(--line);
+    width:100%;
+    margin-bottom:16px;
+  }
+  .field{
+    margin-bottom:16px;
+  }
+  .field label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink);
+    margin-bottom:5px;
+  }
+  .field .hint{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    font-weight:400;
+    margin-left:6px;
+  }
+  .row2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  @media (max-width:520px){ .row2{ grid-template-columns:1fr; } }
+
+  input[type="text"], input[type="email"], select, textarea{
+    width:100%;
+    font-family:var(--sans);
+    font-size:14px;
+    color:var(--ink);
+    background:#FBFBFC;
+    border:1px solid var(--line);
+    border-radius:5px;
+    padding:10px 12px;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  input:focus, select:focus, textarea:focus{
+    outline:none;
+    border-color:var(--brass);
+    box-shadow:0 0 0 3px rgba(169,116,79,0.15);
+  }
+  textarea{ resize:vertical; min-height:96px; }
+
+  .priority-group{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .priority-group input{ display:none; }
+  .priority-group label{
+    font-family:var(--mono);
+    font-size:12px;
+    padding:7px 14px;
+    border:1px solid var(--line);
+    border-radius:20px;
+    cursor:pointer;
+    color:var(--ink-soft);
+    transition:all .15s ease;
+    margin:0;
+  }
+  .priority-group input:checked + label{
+    background:var(--ink);
+    color:#fff;
+    border-color:var(--ink);
+  }
+  .priority-group input#p-urgent:checked + label{
+    background:var(--stamp);
+    border-color:var(--stamp);
+  }
+
+  .submit-row{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-top:8px;
+  }
+  button.submit{
+    font-family:var(--sans);
+    font-weight:600;
+    font-size:14.5px;
+    background:var(--stamp);
+    color:#fff;
+    border:none;
+    padding:12px 26px;
+    border-radius:6px;
+    cursor:pointer;
+    transition:background .15s ease, transform .1s ease;
+  }
+  button.submit:hover{ background:#84302F; }
+  button.submit:active{ transform:translateY(1px); }
+  .submit-note{
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+
+  /* TICKET / TRACE PANEL */
+  .ticket{
+    background:#161F33;
+    color:#E7EAF2;
+    padding:0;
+    border-left:1px dashed var(--line);
+    display:flex;
+    flex-direction:column;
+    min-height:100%;
+  }
+  .ticket-tabs{
+    display:flex;
+    border-bottom:1px solid #2A3550;
+  }
+  .ticket-tab{
+    flex:1;
+    text-align:center;
+    padding:14px 10px;
+    font-family:var(--mono);
+    font-size:11.5px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:#8592B0;
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+  }
+  .ticket-tab.active{
+    color:#E7EAF2;
+    border-bottom-color:var(--brass);
+  }
+  .ticket-body{
+    padding:26px 26px 30px;
+    flex:1;
+  }
+  .ticket-pane{ display:none; }
+  .ticket-pane.active{ display:block; }
+
+  .ticket-stub{
+    text-align:center;
+    padding-bottom:18px;
+    margin-bottom:18px;
+    border-bottom:1px dashed #34405F;
+  }
+  .ticket-stub .label{
+    font-family:var(--mono);
+    font-size:10.5px;
+    color:#7E8CAD;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+  }
+  .ticket-stub .id{
+    font-family:var(--mono);
+    font-size:22px;
+    color:var(--brass);
+    font-weight:600;
+    margin:6px 0 4px;
+  }
+  .status-pill{
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:11px;
+    padding:3px 10px;
+    border-radius:20px;
+    background:rgba(63,125,88,0.18);
+    color:#7FD9A3;
+    border:1px solid rgba(63,125,88,0.4);
+  }
+  .status-pill.pending{
+    background:rgba(169,116,79,0.15);
+    color:var(--brass);
+    border-color:rgba(169,116,79,0.4);
+  }
+
+  .kv{
+    display:grid;
+    grid-template-columns:90px 1fr;
+    gap:6px 10px;
+    font-size:12.5px;
+    margin-bottom:4px;
+  }
+  .kv .k{ color:#8592B0; font-family:var(--mono); font-size:11px; }
+  .kv .v{ color:#E7EAF2; word-break:break-word; }
+
+  pre.trace{
+    margin:0;
+    font-family:var(--mono);
+    font-size:11.8px;
+    line-height:1.75;
+    white-space:pre-wrap;
+    word-break:break-word;
+    color:#C7CEE0;
+  }
+  .trace .k1{ color:#7FD9A3; }
+  .trace .k2{ color:var(--brass); }
+  .trace .k3{ color:#8FB3E8; }
+
+  .empty-state{
+    color:#7E8CAD;
+    font-size:13px;
+    text-align:center;
+    padding:40px 10px;
+  }
+
+  /* PROCESS STRIP */
+  .process{
+    margin-top:46px;
+  }
+  .process h2{
+    font-family:var(--display);
+    font-size:18px;
+    font-weight:600;
+    margin-bottom:4px;
+  }
+  .process p.lead{
+    color:var(--ink-soft);
+    font-size:13.5px;
+    margin:0 0 18px;
+  }
+  .steps{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:14px;
+  }
+  @media (max-width:860px){ .steps{ grid-template-columns:repeat(2,1fr); } }
+  .step{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:16px;
+  }
+  .step .n{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--brass);
+    margin-bottom:6px;
+  }
+  .step h3{
+    font-size:13.5px;
+    margin:0 0 4px;
+    font-weight:600;
+  }
+  .step p{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin:0;
+  }
+
+  footer{
+    max-width:1120px;
+    margin:0 auto;
+    padding:20px 24px 50px;
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--ink-soft);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  .req{ color:var(--stamp); }
+</style>
+</head>
+<body>
+
+<div class="letterhead">
+  <div class="letterhead-inner">
+    <div class="lh-tag">Compliant Web Delivery</div>
+  </div>
+</div>
+
+<main>
+  <div class="hero">
+    <div>
+      <h1>Raise a Complaint</h1>
+      <p>Submit a grievance to the concerned department. Every submission is transmitted as a standard HTTP request and logged as a structured XML record — shown live on the right as you fill the form.</p>
+    </div>
+    <div class="office-code">OFFICE HOURS · MON–SAT · 09:00–17:00</div>
+  </div>
+
+  <div class="desk">
+    <form id="complaintForm" novalidate>
+
+      <fieldset>
+        <legend>Complainant details</legend>
+        <div class="row2">
+          <div class="field">
+            <label for="fullName">Full name <span class="req">*</span></label>
+            <input type="text" id="fullName" name="fullName" required autocomplete="name" placeholder="e.g. Arjun Rao">
+          </div>
+          <div class="field">
+            <label for="regEmail">Register no. / email <span class="req">*</span></label>
+            <input type="text" id="regEmail" name="regEmail" required autocomplete="email" placeholder="e.g. 21CS0456 or you@simats.edu">
+          </div>
+        </div>
+        <div class="field">
+          <label for="department">Department <span class="hint">(optional)</span></label>
+          <input type="text" id="department" name="department" placeholder="e.g. Computer Science & Engineering">
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Complaint details</legend>
+        <div class="row2">
+          <div class="field">
+            <label for="category">Category <span class="req">*</span></label>
+            <select id="category" name="category" required>
+              <option value="" selected disabled>Select category</option>
+              <option value="Academic">Academic</option>
+              <option value="Hostel">Hostel &amp; Accommodation</option>
+              <option value="Infrastructure">Infrastructure &amp; Facilities</option>
+              <option value="IT">IT / Portal Access</option>
+              <option value="Conduct">Faculty / Staff Conduct</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Priority <span class="req">*</span></label>
+            <div class="priority-group">
+              <input type="radio" name="priority" id="p-low" value="Low" checked><label for="p-low">Low</label>
+              <input type="radio" name="priority" id="p-med" value="Medium"><label for="p-med">Medium</label>
+              <input type="radio" name="priority" id="p-high" value="High"><label for="p-high">High</label>
+              <input type="radio" name="priority" id="p-urgent" value="Urgent"><label for="p-urgent">Urgent</label>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="subject">Subject <span class="req">*</span></label>
+          <input type="text" id="subject" name="subject" required placeholder="Short summary of the issue">
+        </div>
+        <div class="field">
+          <label for="description">Description <span class="req">*</span></label>
+          <textarea id="description" name="description" required placeholder="Describe what happened, when, and where"></textarea>
+        </div>
+      </fieldset>
+
+      <div class="submit-row">
+        <button type="submit" class="submit">Submit complaint</button>
+        <span class="submit-note" id="formNote">Sent as an HTTP POST to /api/complaints</span>
+      </div>
+    </form>
+
+    <aside class="ticket">
+      <div class="ticket-tabs">
+        <div class="ticket-tab active" data-tab="receipt">Receipt</div>
+        <div class="ticket-tab" data-tab="http">HTTP Trace</div>
+        <div class="ticket-tab" data-tab="xml">XML Record</div>
+      </div>
+      <div class="ticket-body">
+
+        <div class="ticket-pane active" id="pane-receipt">
+          <div id="receiptEmpty" class="empty-state">No complaint filed yet.<br>Submit the form to generate a tracking ticket.</div>
+          <div id="receiptFilled" style="display:none;">
+            <div class="ticket-stub">
+              <div class="label">Tracking ID</div>
+              <div class="id" id="ticketId">—</div>
+              <span class="status-pill pending" id="ticketStatus">Pending Review</span>
+            </div>
+            <div class="kv"><div class="k">Filed</div><div class="v" id="rcName">—</div></div>
+            <div class="kv"><div class="k">Contact</div><div class="v" id="rcEmail">—</div></div>
+            <div class="kv"><div class="k">Category</div><div class="v" id="rcCategory">—</div></div>
+            <div class="kv"><div class="k">Priority</div><div class="v" id="rcPriority">—</div></div>
+            <div class="kv"><div class="k">Filed at</div><div class="v" id="rcTime">—</div></div>
+          </div>
+        </div>
+
+        <div class="ticket-pane" id="pane-http">
+          <pre class="trace" id="httpTrace">Waiting for submission…</pre>
+        </div>
+
+        <div class="ticket-pane" id="pane-xml">
+          <pre class="trace" id="xmlTrace">Waiting for submission…</pre>
+        </div>
+
+      </div>
+    </aside>
+  </div>
+
+  <div class="process">
+    <h2>What happens after you press submit</h2>
+    <p class="lead">The same request/response cycle covered in CO-1 — a browser-issued HTTP request, a server response, and a standards-compliant record of the data.</p>
+    <div class="steps">
+      <div class="step"><div class="n">01</div><h3>Client validation</h3><p>Required fields are checked in the browser before anything is sent.</p></div>
+      <div class="step"><div class="n">02</div><h3>HTTP POST</h3><p>Form data is sent to <code>/api/complaints</code> in the request body, not the URL.</p></div>
+      <div class="step"><div class="n">03</div><h3>Server processing</h3><p>The server validates, assigns a tracking ID, and stores the record.</p></div>
+      <div class="step"><div class="n">04</div><h3>201 Created</h3><p>On success the server replies with a Location header pointing to the new complaint resource.</p></div>
+      <div class="step"><div class="n">05</div><h3>XML record</h3><p>The complaint is persisted as a well-formed, schema-valid XML entry for the registry.</p></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <span>SIMATS Engineering · Grievance Registry</span>
+  <span>Valid HTML5 · semantic markup · WCAG-labelled form fields</span>
+</footer>
+
+<script>
+(function(){
+  const form = document.getElementById('complaintForm');
+  const tabs = document.querySelectorAll('.ticket-tab');
+  const panes = document.querySelectorAll('.ticket-pane');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      panes.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('pane-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  function escapeXml(str){
+    return String(str)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&apos;');
+  }
+
+  function pad(n){ return n.toString().padStart(2,'0'); }
+
+  function genId(){
+    const year = new Date().getFullYear();
+    const rand = Math.floor(1000 + Math.random()*9000);
+    return 'CMP-' + year + '-' + rand;
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const name = document.getElementById('fullName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const dept = document.getElementById('department').value.trim();
+    const category = document.getElementById('category').value;
+    const priority = form.querySelector('input[name="priority"]:checked').value;
+    const subject = document.getElementById('subject').value.trim();
+    const description = document.getElementById('description').value.trim();
+
+    if(!name || !email || !category || !subject || !description){
+      document.getElementById('formNote').textContent = 'Please fill all required fields marked *';
+      document.getElementById('formNote').style.color = '#9E3A3A';
+      return;
+    }
+
+    const id = genId();
+    const now = new Date();
+    const timeStr = now.toLocaleString();
+    const isoTime = now.toISOString();
+
+    // Receipt pane
+    document.getElementById('receiptEmpty').style.display = 'none';
+    document.getElementById('receiptFilled').style.display = 'block';
+    document.getElementById('ticketId').textContent = id;
+    document.getElementById('rcName').textContent = name;
+    document.getElementById('rcEmail').textContent = email;
+    document.getElementById('rcCategory').textContent = category;
+    document.getElementById('rcPriority').textContent = priority;
+    document.getElementById('rcTime').textContent = timeStr;
+
+    // HTTP trace pane
+    const bodyObj = { fullName: name, email: email, department: dept, category, priority, subject, description };
+    const bodyJson = JSON.stringify(bodyObj, null, 2);
+    document.getElementById('httpTrace').innerHTML =
+`<span class="k2">POST</span> /api/complaints <span class="k3">HTTP/1.1</span>
+Host: grievance.simats.edu
+Content-Type: application/json
+Content-Length: ${bodyJson.length}
+
+${escapeXml(bodyJson)}
+
+<span class="k1">HTTP/1.1 201 Created</span>
+Location: /api/complaints/${id}
+Content-Type: application/xml
+Date: ${now.toUTCString()}`;
+
+    // XML pane
+    const xml =
+`<?xml version="1.0" encoding="UTF-8"?>
+<complaint id="${escapeXml(id)}" status="pending">
+  <filedAt>${isoTime}</filedAt>
+  <complainant>
+    <name>${escapeXml(name)}</name>
+    <contact>${escapeXml(email)}</contact>
+    <department>${escapeXml(dept || 'Not specified')}</department>
+  </complainant>
+  <category>${escapeXml(category)}</category>
+  <priority>${escapeXml(priority)}</priority>
+  <subject>${escapeXml(subject)}</subject>
+  <description>${escapeXml(description)}</description>
+</complaint>`;
+    document.getElementById('xmlTrace').textContent = xml;
+
+    document.getElementById('formNote').textContent = 'Submitted — tracking ID ' + id;
+    document.getElementById('formNote').style.color = '#3F7D58';
+
+    tabs.forEach(t => t.classList.remove('active'));
+    panes.forEach(p => p.classList.remove('active'));
+    document.querySelector('.ticket-tab[data-tab="receipt"]').classList.add('active');
+    document.getElementById('pane-receipt').classList.add('active');
+
+    form.reset();
+    document.getElementById('p-low').checked = true;
+  });
+})();
+</script>
+
+</body>
+</html>
